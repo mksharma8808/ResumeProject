@@ -1,0 +1,30 @@
+{% extends "login_page.html" %}
+
+{% block containerpage %}
+
+<div class="col-3">
+    <div class="resume-btn">
+        <a href="" style="text-decoration: none;">Add Resume</a>
+    </div>
+    <div class="resume-btn">
+        <a href="" style="text-decoration: none;">Filter Resume</a>
+    </div>
+</div>
+<div class="title">
+    Add Resume
+</div>
+<div style="display: flex; align-items: center; justify-content: center;">
+    <div style="flex-direction: column;">
+        <div class="div-center">
+            <label>Select Resume : </label>
+            <input type="file" name="resume" id="">
+        </div>
+        <span>Total Resume selected : 5</span>
+        <div class="title" style="margin: 10px 0 10px 0">
+            <button class="btn">submit</button>
+            <button class="btn">Clear</button>
+        </div>
+    </div>
+</div>
+
+{% endblock containerpage %}
