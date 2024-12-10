@@ -2,27 +2,35 @@
 
 {% block containerpage %}
 
-<div class="col-3">
-    <div class="resume-btn">
-        <a href="" style="text-decoration: none;">Add Resume</a>
-    </div>
-    <div class="resume-btn">
-        <a href="" style="text-decoration: none;">Filter Resume</a>
-    </div>
-</div>
-<div class="title">
-    Add Resume
-</div>
-<div style="display: flex; align-items: center; justify-content: center;">
-    <div style="flex-direction: column;">
-        <div class="div-center">
-            <label>Select Resume : </label>
-            <input type="file" name="resume" id="">
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar Section -->
+        <div class="col-md-3 mb-4">
+            <div class="w-50">
+                <div class="d-flex flex-column gap-3">
+                    <a href="#" class="btn btn-primary w-100">Add Resume</a>
+                    <a href="#" class="btn btn-secondary w-100">Filter Resume</a>
+                </div>
+            </div>
         </div>
-        <span>Total Resume selected : 5</span>
-        <div class="title" style="margin: 10px 0 10px 0">
-            <button class="btn">submit</button>
-            <button class="btn">Clear</button>
+
+        <!-- Main Content Section -->
+        <div class="col-md-9">
+            <div class="card shadow p-4">
+                <h4 class="text-center mb-4">Add Resume</h4>
+                <form id="resumeForm">
+                    <div class="mb-3">
+                        <label for="resume" class="form-label">Select Resume:</label>
+                        <input type="file" class="form-control" id="resume" name="resume">
+                    </div>
+                    <p>Total Resumes Selected: <span class="fw-bold" id="totalFiles">0</span></p>
+                    <ul id="fileList" class="list-group mb-3"></ul>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-primary" id="uploadButton">Upload All</button>
+                        <button type="reset" class="btn btn-secondary" id="clearButton">Clear</button>
+                    </div>
+                </form>
+                            </div>
         </div>
     </div>
 </div>

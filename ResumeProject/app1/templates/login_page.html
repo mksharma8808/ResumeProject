@@ -6,98 +6,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="{% static 'mystyle.css' %}" />
+    <link rel="stylesheet" href="{% static 'mystyle.css' %}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="title">Resume</div>
     <div class="header">
+        <div class="font-size">Welcome: Everyone</div>
         <div>
-            <label for="" class="font-size">Welcome : Everyone</label>
-            <!-- <label for="" class="font-size"></label> -->
-        </div>
-        <div>
-            <a class="font-size a-btn" href="/register/" style="text-decoration: none;">Register</a>
-            <a class="font-size a-btn" href="/" style="text-decoration: none;">Login</a>
+            <a class="font-size btn btn-outline-primary" href="/register/">Register</a>
+            <a class="font-size btn btn-outline-secondary" href="/">Login</a>
         </div>
     </div>
+
     <div class="container">
         {% if not index %}
         {% block containerpage %}
-
         {% endblock containerpage %}
         {% else %}
-        <div class="title">
-            Login Page
-        </div>
+        <div class="title">Login Page</div>
+
         {% for message in messages %}
-        <div class="alert {{ message.tags }} alert-dismissible shadow fade show" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            {{ message | safe }}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message|safe }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {% endfor %}
 
-        <div style="display: flex; align-items: center; justify-content: center;">
-            <div style="flex-direction: column;">
-                <form action="/" method="post">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form action="/" method="post" class="shadow p-4 bg-light rounded">
                     {% csrf_token %}
-                <div class="div-center">
-                    <label>Email : </label>
-                    <label><input type="text" name="email" id="email"></label>
-                </div>
-                <div class="div-center" style="margin: 10px 0 10px 0">
-                    <label>Password : </label>
-                    <label><input type="password" name="password" id="password"></label>
-                </div>
-                <span>Create account ? <a href="/register/">New user</a></span>
-                <div class="title" style="margin: 10px 0 10px 0">
-                    <button class="btn" type="submit">Login</button>
-                    <button class="btn" type="reset">Clear</button>
-                </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password">
+                    </div>
+                    <p class="small">Create an account? <a href="/register/">New user</a></p>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-success mx-2">Login</button>
+                        <button type="reset" class="btn btn-secondary">Clear</button>
+                    </div>
                 </form>
             </div>
         </div>
         {% endif %}
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script href="{% static 'myscript.js' %}"></script>
 </body>
-
-<!-- ajax cdn -->
-<!-- <script href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> -->
-<!-- Here is Ajax to use submit the form data -->
-<!-- <script>
-    document.getElementById("submit").addEventListener('click',()=>{
-        let email = document.getElementById("email").value;
-        let password = document.getElementById("password").value;
-        console.log(email,password);
-        let cookie = document.cookie
-        let csrfToken = cookie.substring(cookie.indexOf('=') + 1)
-        $.ajax({
-            type: "POST",
-            url: "/",
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            data: {
-                email: email,
-                password: password,
-                // csrfmiddleware: '{% csrf_token %}',
-            },
-            success: (response)=>{
-                if(response.success){
-                    alert("login successfully");
-                }
-                else{
-                    alert("login denied");
-                }
-            },
-            error: () => {
-
-            }
-        });
-    });
-</script> -->
 
 </html>

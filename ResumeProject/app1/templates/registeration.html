@@ -2,27 +2,31 @@
 
 {% block containerpage %}
 
-<div class="title">
-    Registeration Page
-</div>
-<div style="display: flex; align-items: center; justify-content: center;">
-    <div style="flex-direction: column;">
-        <div class="div-center">
-            <label>Email-ID : </label>
-            <label><input type="text" name="email" id=""></label>
-        </div>
-        <div class="div-center" style="margin: 10px 0 10px 0">
-            <label>Password : </label>
-            <label><input type="text" name="password" id=""></label>
-        </div>
-        <div class="div-center" style="margin: 10px 0 10px 0">
-            <label>Re-Enter Password : </label>
-            <label><input type="text" name="repassword" id=""></label>
-        </div>
-        <span>Already have an account? <a href="/">Login</a></span>
-        <div class="title" style="margin: 10px 0 10px 0">
-            <button class="btn">Create</button>
-            <button class="btn">Clear</button>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Registration Page</h2>
+    <div class="d-flex justify-content-center">
+        <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
+            <form>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email-ID:</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
+                </div>
+                <div class="mb-3">
+                    <label for="repassword" class="form-label">Re-Enter Password:</label>
+                    <input type="password" class="form-control" id="repassword" name="repassword" placeholder="Re-enter your password">
+                </div>
+                <div class="text-center">
+                    <span>Already have an account? <a href="/">Login</a></span>
+                </div>
+                <div class="gap-2 mt-4 text-center">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="reset" class="btn btn-secondary">Clear</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
