@@ -2,33 +2,74 @@
 
 {% block containerpage %}
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Registration Page</h2>
-    <div class="d-flex justify-content-center">
-        <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
-            <form>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email-ID:</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email">
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password:</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
-                </div>
-                <div class="mb-3">
-                    <label for="repassword" class="form-label">Re-Enter Password:</label>
-                    <input type="password" class="form-control" id="repassword" name="repassword" placeholder="Re-enter your password">
-                </div>
-                <div class="text-center">
-                    <span>Already have an account? <a href="/">Login</a></span>
-                </div>
-                <div class="gap-2 mt-4 text-center">
-                    <button type="submit" class="btn btn-primary">Create</button>
-                    <button type="reset" class="btn btn-secondary">Clear</button>
-                </div>
-            </form>
-        </div>
+<!-- <div class="container "> -->
+<h2 class="title">Registration Page</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form class="shadow p-4 bg-light rounded" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="email" class="form-label">Email-ID:</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password:</label>
+                <input type="password" class="form-control" id="password" name="password"
+                    placeholder="Enter your password">
+            </div>
+            <div class="mb-3">
+                <label for="repassword" class="form-label">Re-Enter Password:</label>
+                <input type="password" class="form-control" id="repassword" name="repassword"
+                    placeholder="Re-enter your password">
+            </div>
+            <p class="small">
+                Already have an account? <a href="/">Login</a>
+            </p>
+            <div class="d-flex justify-content-center">
+                <button id="registration-create" class="btn btn-primary mx-2">Create</button>
+                <button type="reset" class="btn btn-secondary">Clear</button>
+            </div>
+        </form>
     </div>
 </div>
+<!-- </div> -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+
+<script>
+    document.getElementById("registration-create").addEventListener('click', () => {
+        let email = document.getElementById("email").value;
+        // let check = email in endswith("@gmail.com");
+        // console.log(check)
+        // if(!check){
+        //     alert("invalid email-ID")
+        //     return;
+        // }
+        let password = document.getElementById("password").value;
+        let repassword = document.getElementById("repassword").value;
+        console.log(email, password, repassword);
+        if (password != repassword) {
+            alert("Please check your password");
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: '/register/',
+            data: {
+                'email': email,
+                'password': password,
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+            },
+            success: (response) => {
+                if (response.success) {
+                    alert(response.message);
+                    window.location.href = response.url_pattern;
+                }
+            },
+        });
+    });
+
+</script>
 
 {% endblock containerpage %}

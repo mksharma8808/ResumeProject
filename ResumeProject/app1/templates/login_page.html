@@ -1,4 +1,5 @@
 {% load static %}
+{% load myfilter %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,10 +14,15 @@
 
 <body>
     <div class="header">
-        <div class="font-size">Welcome: Everyone</div>
+        <div class="font-size">Welcome: {{request.session.id|useremail|title}}</div>
         <div>
+            {% if userlogin %}
+            <a class="font-size btn btn-outline-primary" href="#">Profile</a>
+            <a class="font-size btn btn-outline-secondary" href="/logout/">Log out</a>
+            {% else %}
             <a class="font-size btn btn-outline-primary" href="/register/">Register</a>
-            <a class="font-size btn btn-outline-secondary" href="/">Login</a>
+            <a class="font-size btn btn-outline-secondary" href="/">Log in</a>
+            {% endif %}
         </div>
     </div>
 
@@ -26,17 +32,9 @@
         {% endblock containerpage %}
         {% else %}
         <div class="title">Login Page</div>
-
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message|safe }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <form action="/" method="post" class="shadow p-4 bg-light rounded">
+                <form method="post" class="shadow p-4 bg-light rounded">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
@@ -44,11 +42,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password">
+                        <input type="password" class="form-control" name="password" id="password"
+                            placeholder="Enter your password">
                     </div>
                     <p class="small">Create an account? <a href="/register/">New user</a></p>
                     <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn btn-success mx-2">Login</button>
+                        <button id="login-click" class="btn btn-success mx-2">Login</button>
                         <button type="reset" class="btn btn-secondary">Clear</button>
                     </div>
                 </form>
@@ -57,9 +56,36 @@
         {% endif %}
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script href="{% static 'myscript.js' %}"></script>
+    <script>
+        document.querySelector("#login-click").addEventListener('click', () => {
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            // console.log(email, password);
+            $.ajax({
+                type: 'POST',
+                url: '/login/',
+                data: {
+                    'email': email,
+                    'password': password,
+                    'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                },
+                success: (response) => {
+                    if (response.success) {
+                        alert(response.message);
+                        window.location.href = response.url_pattern;
+                    } else {
+                        alert(response.message);
+                        window.location.reload();
+                    }
+                },
+            });
+        });
+
+    </script>
 </body>
 
 </html>
