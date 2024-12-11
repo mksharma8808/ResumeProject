@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import JsonResponse,HttpResponse
-from .models import Users
+from .models import Users, Resumes
 from django.contrib import messages
 # Create your views here.
 
@@ -78,3 +78,32 @@ def logoutpage(request):
     if id:
         del request.session['id']
     return redirect('/')
+
+
+def updateResume(request):
+    id = request.session.get('id',False)
+    print(request)
+    if id:
+        if request.method == "POST":
+            try:
+                # print(request)
+                # obj = Users.objects.get(id = id)
+                data = request.Files['resume']
+                # for i in data:
+                #     print(i)
+                print("data:",data)
+                return HttpResponse("submition successfully")
+                # print(data)
+                # actualData = data.split(',')
+                # for i in actualData:
+                #     saveobj = Resumes(resume = i, ruid = obj)
+                #     saveobj.save()
+                # return JsonResponse({'success': True}, status = 200)
+            except Exception as msg:
+                print(msg)
+                return JsonResponse({'success': False}, status = 404)
+    return JsonResponse({'success':False,'message':"Please login!!"}, status=200)
+
+def filterResume(request):
+    data = Resumes.objects.all()
+    return render(request,"filter.html", {'data': data})

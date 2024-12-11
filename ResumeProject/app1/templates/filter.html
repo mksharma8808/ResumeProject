@@ -1,0 +1,60 @@
+{% extends "userprofile.html" %}
+
+
+{% block page %}
+<div class="col-md-9">
+    <div class="card shadow p-4">
+        <h4 class="text-center mb-4">Filter Resume</h4>
+        <form id="resumeForm">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="resume" class="form-label">Enter Search Here:</label>
+                <input type="text" class="form-control" id="searchResume" name="searchResume"
+                    placeholder="Enter Search">
+            </div>
+            <p>Total Resumes Selected: <span class="fw-boldf" id="totalFiles">0</span></p>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-primary" id="uploadButton">Search</button>
+                <button type="reset" class="btn btn-secondary" id="clearButton">Clear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+<div class="row">
+    <div class="pcard">
+        <div style="width: 100%;">
+       {{data.resume}}
+       </div>
+    </div>
+    <div class="pcard">
+        <img src="img_avatar.png" alt="Avatar" style="width:100%">
+    </div>
+    <div class="pcard">
+        <img src="img_avatar.png" alt="Avatar" style="width:100%">
+    </div>
+    <div class="pcard">
+        <img src="img_avatar.png" alt="Avatar" style="width:100%">
+    </div>
+</div>
+
+
+
+<style>
+    .pcard {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+        width: 30%;
+        margin: 10px;
+    }
+
+    .pcard:hover {
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    }
+</style>
+{% endblock page %}

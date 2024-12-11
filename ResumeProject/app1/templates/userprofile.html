@@ -1,159 +1,133 @@
 {% extends "login_page.html" %}
+{% load myfilter %}
 
 {% block containerpage %}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- <div class="container mt-5"> -->
-    <div class="row justify-content-between">
-        
-        <div class="col-md-3">
-            <div class="w-50 d-flex flex-column gap-3">
-                <!-- <div class="d-flex flex-column gap-3"> -->
-                    <a href="#" class="btn btn-outline-success w-100">Add Resume</a>
-                    <a href="#" class="btn btn-outline-secondary w-100">Filter Resume</a>
-                <!-- </div> -->
-            </div>
-        </div>
+<div class="row justify-content-between">
 
-        
-        <div class="col-md-9">
-            <div class="card shadow p-4">
-                <h4 class="text-center mb-4">Add Resume</h4>
-                <form id="resumeForm">
-                    <div class="mb-3">
-                        <label for="resume" class="form-label">Select Resume:</label>
-                        <input type="file" class="form-control" id="resume" name="resume" onclick="multiselect();" multiple>
-                    </div>
-                    <p>Total Resumes Selected: <span class="fw-bold" id="totalFiles">0</span></p>
-                    <div id="fileContainer"></div>
-                    <!-- <div class="alert bg-light">
-                        <span class="btn" onclick="this.parentElement.style.display='none';">&times;</span>
-                        This is an alert box.
-                    </div>
-                    <div class="alert bg-light">
-                        <span class="btn" onclick="this.parentElement.style.display='none';">&times;</span>
-                        This is an alert box.
-                    </div>
-                    <div class="alert bg-light">
-                        <span class="btn" onclick="this.parentElement.style.display='none';">&times;</span>
-                        This is an alert box.
-                    </div>
-                    <div class="alert bg-light">
-                        <span class="btn" onclick="this.parentElement.style.display='none';">&times;</span>
-                        This is an alert box.
-                    </div> -->
-                    <ul id="fileList" class="list-group mb-3"></ul>
-                    <div class="d-flex justify-content-between mt-4">
-                        <button type="button" class="btn btn-primary" id="uploadButton">Upload All</button>
-                        <button type="reset" class="btn btn-secondary" id="clearButton">Clear</button>
-                    </div>
-                </form>
-                <input type="text" id="allimages" />
-            </div>
+    <div class="col-md-3">
+        <div class="w-50 d-flex flex-column gap-3">
+            <!-- <div class="d-flex flex-column gap-3"> -->
+            <a href="/profile/" class="btn btn-outline-success w-100">Add Resume</a>
+            <a href="/filter/" class="btn btn-outline-secondary w-100">Filter Resume</a>
+            <!-- </div> -->
         </div>
     </div>
 
-    <script>
-        // document.querySelector("#resume").addEventListener('click', (e) => {
-            // console.log(check)
-            // let arr = [];
-            // let res = document.getElementById("resume");
-            
-            // console.log(res);
-        // });
+    {% block page %}
+    <div class="col-md-9">
+        <div class="card shadow p-4">
+            <h4 class="text-center mb-4">Add Resume</h4>
+            <form action="/update/" id="resumeForm" enctype="multipart/form-data" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="resume" class="form-label">Select Resume:</label>
+                    <input type="file" class="form-control" id="resume" name="resume" accept=".pdf">
+                </div>
+                <p>Total Resumes Selected: <span class="fw-boldf" id="totalFiles">0</span></p>
+                <div id="fileContainer"></div>
+                <ul id="fileList" class="list-group mb-3"></ul>
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">Upload All</button>
+                    <button type="reset" class="btn btn-secondary" id="clearButton">Clear</button>
+                </div>
+            </form>
+            <input type="text" id="allimages" hidden />
+        </div>
+    </div>
+    {% endblock page %}
+</div>
 
-        function multiselect () {
-            let val = document.getElementById("resume");
-            // console.log(val)
-            val.addEventListener("change", (e) => {
-                let data = e.target.value;
-                let fileContainer = document.getElementById("fileContainer");
-                
-                let res = '';
-                // Clear previous content
-                fileContainer.innerHTML = '';
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-                for (const file of data) {
-                    // Append file name to res
+<script>
+    var xcount = 0;
+    
+    function multiselect() {
+        let val = document.getElementById("resume");
+        console.log(val)
+
+        val.addEventListener("change", (e) => {
+            let data = e.target.value;
+            let fileContainer = document.getElementById("fileContainer");
+            let res = '';
+            fileContainer.innerHTML = '';
+            let id = 1;
+            for (const file of val.files) {
+                id += 1;
+                // console.log(file.name)
+                if ((file.name.toLowerCase().endsWith('.pdf')) || (file.name.toLowerCase().endsWith('.doc')) || (file.name.toLowerCase().endsWith('.txt')) || (file.name.toLowerCase().endsWith('.docx'))) {
+
                     res += file.name + ',';
-                    console.log(res);
-                    // Create a new div for each file
+                    // console.log(file);
+                    xcount += 1;
                     let fileDiv = document.createElement("div");
                     fileDiv.className = "alert bg-light";
-
-                    // Add the file name
+                    // fileDiv.setAttribute("id",id);                     
                     fileDiv.innerHTML = `
-                        <span class="btn" onclick="this.parentElement.style.display='none';">&times;</span>
-                        <span>${file.name}</span>
-                    `;
-
-                    // Append the div to the container
+                            <span class="btn" onclick="deleteData(this.parentElement);">&times;</span>
+                            <span>${file.name}</span>
+                        `;
+                    // onclick="this.parentElement.style.display='none';"
                     fileContainer.appendChild(fileDiv);
-                }
-                document.querySelector("#allimages").value = res;
-                
-            });
+                } 
+            }
+            // console.log(count);
+            // document.querySelector("#totalFiles").innerHTML = val.files.length;
+            let newstr = res.slice(0,res.length-1);
+            // console.log(newstr)
+            document.querySelector("#allimages").value = newstr;
+            document.querySelector("#totalFiles").innerHTML = xcount;
+        });
+        // console.log(res);        
+        // delete val.files[1];
+        // console.log(val.files);
+
+    }
+
+    function deleteData(value) {
+        // console.log(value);
+        // console.log(value.children)
+        // console.log(value.children[1].innerHTML);
+        let singleData = value.children[1].innerHTML;
+        let data = document.querySelector("#allimages").value;
+        let allData = data.split(',');
+        let fileData = document.getElementById("fileContainer");
+        let res = '';
+        // let count = 0;
+        const fileContainer = document.getElementById("resume");
+        for (const x in allData) {
+            // console.log(allData[x],typeof(allData[x]));
+            // console.log(singleData,typeof(singleData));
+            if (allData[x] == singleData) {
+                // console.log("matched")
+                xcount -= 1;
+                value.style.display = 'none';
+                // for( const i in fileContainer.files){
+                //     // console.log(fileContainer.files[i],typeof(fileContainer.files))
+                //     if(fileContainer.files[i].name == singleData){
+                //         // console.log("find")
+                //         delete fileContainer.files[i];
+
+                //     }
+                // }
+
+            } else {
+                res += allData[x] + ',';
+                // count += 1;
+                // console.log(count);
+            }
+
         }
+        let newstr = res.slice(0,res.length-1); 
+        // console.log(newstr)
+        document.querySelector("#allimages").value = newstr;
+        document.querySelector("#totalFiles").innerHTML = xcount;
+    }
 
-
-
-        // function fetchvalue(){
-        //     let val = document.getElementById("resume");
-        //     // console.log(val);
-        //     var value1 = "";
-        //     // let arr = [];
-        //     let count = [];
-        //     let content = document.querySelector("#allimages").value;
-        //     let data = content.split(',');
-        //     // console.log(data,typeof(data));
-        //     // console.log()
-        //     for(let x in data){
-        //         count.push(x);
-        //     }
-        //     console.log(count)
-        //     // var newstr = '';
-        //     // for(let i in data){
-        //     //     // console.log(i,typeof(i))
-        //     //     newstr += (data.i + ',');
-        //     // }
-        //     // newstr += value1;
-        //     // console.log(newstr);
-
-        //     val.addEventListener('change', (e) => {
-        //         // console.log(e)
-        //         // console.clear()
-        //         let check = e.target.files;
-        //         // console.log(check.length);
-        //         // count += 1;
-        //         // console.log(check[0].name);
-        //         // console.log(count+" time count")
-        //         value1 = check[0].name;
-        //         // console.log(value1);
-                
-        //         // let content = document.querySelector("#allimages").value;
-        //         // console.log(content,typeof(content));
-        //         // let data = content.split(',');
-        //         // console.log(data,typeof(data));
-        //         // var newstr = '';
-        //         // for(let i=0;data.length;i++){
-        //         // for(let i in data){
-        //         //     // console.log(i,typeof(i))
-        //         //     newstr += (data.i + ',');
-        //         // }
-        //         // newstr += value1;
-        //         // console.log(newstr);
-        //         newstr += value1;
-        //         console.log("hello:"+newstr);
-                
-        //         document.querySelector("#allimages").value = newstr;
-        //     })
-        //     console.log(":"+value1)
-        //     // arr.unshift(value1);
-        //     // document.querySelector("#totalFiles").innerHTML = arr.length;
-        //     // console.log(arr)
-        //     // console.log(count);
-        // }
-    </script>
+</script>
 <!-- </div> -->
 
 {% endblock containerpage %}

@@ -14,9 +14,9 @@
 
 <body>
     <div class="header">
-        <div class="font-size">Welcome: {{request.session.id|useremail|title}}</div>
+        <div class="font-size">Welcome: {{request.session.id|useremail}}</div>
         <div>
-            {% if userlogin %}
+            {% if request.session.id|LoginCheck %}
             <a class="font-size btn btn-outline-primary" href="#">Profile</a>
             <a class="font-size btn btn-outline-secondary" href="/logout/">Log out</a>
             {% else %}
@@ -27,8 +27,11 @@
     </div>
 
     <div class="container">
+        
         {% if not index %}
         {% block containerpage %}
+        
+        
         {% endblock containerpage %}
         {% else %}
         <div class="title">Login Page</div>

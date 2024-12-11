@@ -7,6 +7,12 @@ register = template.Library()
 def useremail(id):
     try:
         user = Users.objects.get(id = id)
-        return user.email
+        return user.email.capitalize()
     except:
-        return 'everyone'
+        return 'Everyone'
+    
+@register.filter()
+def LoginCheck(id=False):
+    if id:
+        return True
+    return False
