@@ -25,7 +25,8 @@
                         <input type="file" class="form-control" id="resume" name="resume" onclick="multiselect();" multiple>
                     </div>
                     <p>Total Resumes Selected: <span class="fw-bold" id="totalFiles">0</span></p>
-                    <div class="alert bg-light">
+                    <div id="fileContainer"></div>
+                    <!-- <div class="alert bg-light">
                         <span class="btn" onclick="this.parentElement.style.display='none';">&times;</span>
                         This is an alert box.
                     </div>
@@ -40,7 +41,7 @@
                     <div class="alert bg-light">
                         <span class="btn" onclick="this.parentElement.style.display='none';">&times;</span>
                         This is an alert box.
-                    </div>
+                    </div> -->
                     <ul id="fileList" class="list-group mb-3"></ul>
                     <div class="d-flex justify-content-between mt-4">
                         <button type="button" class="btn btn-primary" id="uploadButton">Upload All</button>
@@ -66,18 +67,28 @@
             // console.log(val)
             val.addEventListener("change", (e) => {
                 let data = e.target.value;
-                // console.log(data);
-                // console.log(val.value);
+                let fileContainer = document.getElementById("fileContainer");
+                
                 let res = '';
-                for(const x of val.files){
-                    // console.log(x.name)
-                    // res.push(x.name);
-                    res += x.name+',';
-                    
-                    <div class="alert bg-light">
+                // Clear previous content
+                fileContainer.innerHTML = '';
+
+                for (const file of data) {
+                    // Append file name to res
+                    res += file.name + ',';
+                    console.log(res);
+                    // Create a new div for each file
+                    let fileDiv = document.createElement("div");
+                    fileDiv.className = "alert bg-light";
+
+                    // Add the file name
+                    fileDiv.innerHTML = `
                         <span class="btn" onclick="this.parentElement.style.display='none';">&times;</span>
-                        xname
-                    </div>
+                        <span>${file.name}</span>
+                    `;
+
+                    // Append the div to the container
+                    fileContainer.appendChild(fileDiv);
                 }
                 document.querySelector("#allimages").value = res;
                 

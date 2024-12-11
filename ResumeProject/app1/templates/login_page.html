@@ -47,7 +47,7 @@
                     </div>
                     <p class="small">Create an account? <a href="/register/">New user</a></p>
                     <div class="d-flex justify-content-center">
-                        <button id="login-click" class="btn btn-success mx-2">Login</button>
+                        <button id="login-click" type="button" class="btn btn-success mx-2">Login</button>
                         <button type="reset" class="btn btn-secondary">Clear</button>
                     </div>
                 </form>
@@ -64,7 +64,7 @@
         document.querySelector("#login-click").addEventListener('click', () => {
             let email = document.getElementById("email").value;
             let password = document.getElementById("password").value;
-            // console.log(email, password);
+             console.log(email, password);
             $.ajax({
                 type: 'POST',
                 url: '/login/',
@@ -82,6 +82,10 @@
                         window.location.reload();
                     }
                 },
+                error: (xhr, status, error) => {
+                    console.error("AJAX Error:", error);
+                    alert("An error occurred. Please try again.");
+                }
             });
         });
 

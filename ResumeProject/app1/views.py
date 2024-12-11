@@ -31,10 +31,11 @@ def login(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
+        print(email,password)
         users = Users.objects.all()
         # print("users:",users)
         for user in users:
-            # print(user)
+            print(user)
             if email == user.email and password == user.password:
                 # messages.SUCCESS(request,"Login Successfully")
                 request.session['id'] = user.id
