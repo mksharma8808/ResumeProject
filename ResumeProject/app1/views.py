@@ -68,8 +68,10 @@ def register(request):
 def profile(request):
     id = request.session.get('id')
     if id:
-        data = {'userlogin': id}
-        return render(request, "userprofile.html", data)
+        data = Resumes.objects.all().values('resume')
+        result = {'userlogin': id, 'data': data}
+        # return render(request,"userprofile.html",{'data': data})
+        return render(request, "userprofile.html", result)
     else:
         return redirect('/')
 
@@ -79,31 +81,36 @@ def logoutpage(request):
         del request.session['id']
     return redirect('/')
 
+from django.core.files.storage import FileSystemStorage
 
 def updateResume(request):
     id = request.session.get('id',False)
-    print(request)
     if id:
         if request.method == "POST":
             try:
-                # print(request)
-                # obj = Users.objects.get(id = id)
-                data = request.Files['resume']
-                # for i in data:
-                #     print(i)
-                print("data:",data)
-                return HttpResponse("submition successfully")
-                # print(data)
-                # actualData = data.split(',')
-                # for i in actualData:
-                #     saveobj = Resumes(resume = i, ruid = obj)
-                #     saveobj.save()
-                # return JsonResponse({'success': True}, status = 200)
+                files = request.FILES.getlist('resume') 
+                if not files:
+                    return JsonResponse({'success': False, 'message': 'No files uploaded!'}, status=400)
+                
+                for file in files:
+                    if not file.name.lower().endswith(('.pdf', '.doc', '.docx', '.txt')):
+                        return JsonResponse({'success': False, 'message': f'Invalid file type: {file.name}'}, status=400)
+                    
+                    fs = FileSystemStorage(location='uploads/resumes/')
+                    filename = fs.save(file.name, file)
+                    file_url = fs.url(filename)
+
+                    Resumes.objects.create(
+                        resume=file_url,
+                        ruid_id=id 
+                    )
+                return redirect('/profile/')
             except Exception as msg:
-                print(msg)
+                # print(msg)
                 return JsonResponse({'success': False}, status = 404)
+        return render(request,"userprofile.html")
     return JsonResponse({'success':False,'message':"Please login!!"}, status=200)
 
 def filterResume(request):
-    data = Resumes.objects.all()
+    data = Resumes.objects.all().values('resume')
     return render(request,"filter.html", {'data': data})

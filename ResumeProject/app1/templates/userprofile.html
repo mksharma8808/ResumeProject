@@ -2,7 +2,9 @@
 {% load myfilter %}
 
 {% block containerpage %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+    rel="stylesheet">
 
 <!-- <div class="container mt-5"> -->
 <div class="row justify-content-between">
@@ -10,8 +12,10 @@
     <div class="col-md-3">
         <div class="w-50 d-flex flex-column gap-3">
             <!-- <div class="d-flex flex-column gap-3"> -->
-            <a href="/profile/" class="btn btn-outline-success w-100">Add Resume</a>
-            <a href="/filter/" class="btn btn-outline-secondary w-100">Filter Resume</a>
+            <a href="/profile/" class="btn btn-outline-success w-100">Add
+                Resume</a>
+            <a href="/filter/" class="btn btn-outline-secondary w-100">Filter
+                Resume</a>
             <!-- </div> -->
         </div>
     </div>
@@ -20,29 +24,61 @@
     <div class="col-md-9">
         <div class="card shadow p-4">
             <h4 class="text-center mb-4">Add Resume</h4>
-            <form action="/update/" id="resumeForm" enctype="multipart/form-data" method="post">
+            <form action="/update/" id="resumeForm"
+                enctype="multipart/form-data" method="post">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <label for="resume" class="form-label">Select Resume:</label>
-                    <input type="file" class="form-control" id="resume" name="resume" accept=".pdf">
+                    <label for="resume" class="form-label">Select
+                        Resume:</label>
+                    <input type="file" class="form-control" id="resume"
+                        name="resume" accept=".pdf" multiple>
                 </div>
-                <p>Total Resumes Selected: <span class="fw-boldf" id="totalFiles">0</span></p>
+                <p>Total Resumes Selected: <span class="fw-boldf"
+                        id="totalFiles">0</span></p>
                 <div id="fileContainer"></div>
                 <ul id="fileList" class="list-group mb-3"></ul>
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="submit" class="btn btn-primary">Upload All</button>
-                    <button type="reset" class="btn btn-secondary" id="clearButton">Clear</button>
+                    <button type="submit" class="btn btn-primary">Upload
+                        All</button>
+                    <button type="reset" class="btn btn-secondary"
+                        id="clearButton">Clear</button>
                 </div>
             </form>
             <input type="text" id="allimages" hidden />
         </div>
     </div>
+
+    
+    <div class="row">
+        {% for pdf in data %}
+            <div class="pcard">
+                <div style="width: 100%;">
+                    <p>PDF Name: {{ pdf.resume|basename }}</p>
+                    <a href="{{ pdf.resume.url }}" target="_blank">View PDF</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <style>
+    .pcard {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+        width: 30%;
+        margin: 10px;
+    }
+
+    .pcard:hover {
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    }
+</style>
     {% endblock page %}
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-<script>
+<!-- <script>
     var xcount = 0;
     
     function multiselect() {
@@ -127,7 +163,59 @@
         document.querySelector("#totalFiles").innerHTML = xcount;
     }
 
+</script> -->
+
+<script>
+    let selectedFiles = new Set(); // Track selected files uniquely
+    const fileInput = document.getElementById("resume");
+    const fileContainer = document.getElementById("fileContainer");
+    const totalFilesElement = document.querySelector("#totalFiles");
+    const allImagesElement = document.querySelector("#allimages");
+
+    fileInput.addEventListener("change", (e) => {
+        const files = Array.from(e.target.files);
+        let res = '';
+
+        // Add new files to the Set and UI
+        files.forEach((file) => {
+            if (
+                file.name.toLowerCase().endsWith('.pdf') ||
+                file.name.toLowerCase().endsWith('.doc') ||
+                file.name.toLowerCase().endsWith('.txt') ||
+                file.name.toLowerCase().endsWith('.docx')
+            ) {
+                if (!selectedFiles.has(file.name)) {
+                    selectedFiles.add(file.name);
+
+                    const fileDiv = document.createElement("div");
+                    fileDiv.className = "alert bg-light";
+                    fileDiv.innerHTML = `
+                        <span class="btn" onclick="deleteData('${file.name}', this.parentElement)">&times;</span>
+                        <span>${file.name}</span>
+                    `;
+                    fileContainer.appendChild(fileDiv);
+                }
+            }
+        });
+
+        updateFileList();
+    });
+
+    function deleteData(fileName, element) {
+        if (selectedFiles.has(fileName)) {
+            selectedFiles.delete(fileName);
+            element.remove();
+            updateFileList();
+        }
+    }
+
+    function updateFileList() {
+        xcount = selectedFiles.size;
+        totalFilesElement.textContent = xcount;
+        allImagesElement.value = Array.from(selectedFiles).join(',');
+    }
 </script>
+
 <!-- </div> -->
 
 {% endblock containerpage %}

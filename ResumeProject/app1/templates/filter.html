@@ -1,5 +1,5 @@
 {% extends "userprofile.html" %}
-
+{% load myfilter %}
 
 {% block page %}
 <div class="col-md-9">
@@ -25,22 +25,15 @@
 
 
 
-
 <div class="row">
-    <div class="pcard">
-        <div style="width: 100%;">
-       {{data.resume}}
-       </div>
-    </div>
-    <div class="pcard">
-        <img src="img_avatar.png" alt="Avatar" style="width:100%">
-    </div>
-    <div class="pcard">
-        <img src="img_avatar.png" alt="Avatar" style="width:100%">
-    </div>
-    <div class="pcard">
-        <img src="img_avatar.png" alt="Avatar" style="width:100%">
-    </div>
+    {% for pdf in data %}
+        <div class="pcard">
+            <div style="width: 100%;">
+                <p>PDF Name: {{ pdf.resume|basename }}</p>
+                <a href="{{ pdf.resume.url }}" target="_blank">View PDF</a>
+            </div>
+        </div>
+    {% endfor %}
 </div>
 
 

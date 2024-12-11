@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 from app1.models import Users
 
 register = template.Library()
@@ -16,3 +17,13 @@ def LoginCheck(id=False):
     if id:
         return True
     return False
+
+@register.filter()
+def imageFind(img):
+    return f'{settings.BASE_DIR}/uploads/resumes/{img}'
+
+
+import os
+@register.filter
+def basename(value):
+    return os.path.basename(value)
