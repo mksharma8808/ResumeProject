@@ -25,16 +25,14 @@
 
 
 
-<div class="row">
-    {% for key,value in data %}
-        <div class="pcard">
-            <div style="width: 100%;">
-                <p>PDF Name: {{ value|FileFind }}</p>
-                <a href="{{ value|FileFindLocation }}" target="">View PDF</a>
-            </div>
-        </div>
+<ul>
+    {% for resume in resumes %}
+        <li>
+            {{ resume.resume.url }}
+            <a href="{{ resume.resume.url }}" target="_blank">{{ resume.resume.name }}</a>
+        </li>
     {% endfor %}
-</div>
+</ul>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

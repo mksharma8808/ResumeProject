@@ -88,26 +88,13 @@ def register(request):
         # return HttpResponse("registeration successfully")
     return render(request,"registeration.html")
 
-def profile(request):
-    id = request.session.get('id')
+def userProfile(request):
+    id = request.session.get('id', False)
     if id:
-        # count = 0
-        # resume = Resumes.objects.all().values('resume')
-        # actualpdf = {}
-        # for data in resume:
-        #     pathfile = callPathFile(data['resume'])
-        #     actualpdf.update({f'resume{count}': pathfile})
-        #     count += 1
-            # # print(pathfile)
-            # string = f'{settings.BASE_DIR}'
-            # string += f'\\uploads\\resumes\\{pathfile}'
+        # resumes = Resumes.objects.filter(ruid_id=id)  # Fetch user's resumes
+        return render(request, "userprofile.html")
+    return redirect('/login/')
 
-
-        result = {'userlogin': id}
-        # return render(request,"userprofile.html",{'data': data})
-        return render(request, "userprofile.html", result)
-    else:
-        return redirect('/')
 
 def logoutpage(request):
     id = request.session.get('id',False)
@@ -130,14 +117,14 @@ def updateResume(request):
                     if not file.name.lower().endswith(('.pdf', '.doc', '.docx', '.txt')):
                         return JsonResponse({'success': False, 'message': f'Invalid file type: {file.name}'}, status=400)
                     
-                    fs = FileSystemStorage(location='uploads/resumes/')
-                    filename = fs.save(file.name, file)
-                    file_url = fs.url(filename)
+                    # fs = FileSystemStorage(location='uploads/resumes/')
+                    # filename = fs.save(file.name, file)
+                    # file_url = fs.url(filename)
 
-                    Resumes.objects.create(
-                        resume=file_url,
-                        ruid_id=id 
-                    )
+                    # Resumes.objects.create(
+                    #     resume=file_url,
+                    #     ruid_id=id 
+                    # )
                     # print(file)
                     # try:
                     #     userobj = Users.objects.get(id = int(id))
@@ -146,6 +133,11 @@ def updateResume(request):
                     #     print("success")
                     # except Exception as msg:
                     #     print(msg)
+                     # Save each file directly using Django's FileField
+                    Resumes.objects.create(
+                        resume=file,  # Save the file to the media folder
+                        ruid_id=id    # Associate with the logged-in user
+                    )
                 return redirect('/profile/')
             except Exception as msg:
                 print(msg)
@@ -157,10 +149,17 @@ def filterResume(request):
     id = request.session.get('id',False)
     if id:
         # data = Resumes.objects.all().values('resume')
-        return render(request,"filter.html")
+        resumes = Resumes.objects.filter(ruid_id=id)
+        return render(request, "filter.html", {'resumes': resumes})
     return redirect('/')
 
 
+def rootClear(path):
+    # for i in path:
+    #     print(i)
+    print(path)
+    
+    return False
 
 # Create your tests here.
 from pypdf import PdfReader
@@ -175,35 +174,37 @@ def searchResume(request):
             searchdata = search.split(' ')
             searchincr = len(searchdata)
             # print(searchdata,searchincr)
-            resume = Resumes.objects.all().values('resume')
-            # print(resume)
-            result = {}
+            # resume = Resumes.objects.all().values('resume')
+            resume = Resumes.objects.all()
+            print(list(resume))
+            result = []
             incr = 0
 
             for data in resume:
-
-                checkincr = 0
-                pathfile = callPathFile(data['resume'])
-                string = f'{settings.BASE_DIR}'
-                string += f'\\uploads\\resumes\\{pathfile}'
+                print(type(data.resume))
+                # checkincr = 0
+                # pathfile = callPathFile(data['resume'])
+                root = rootClear(data.resume)
+                print(root)
+                string = f'{settings.BASE_DIR}\media\{data.resume}'
+                print(string)
+                # string += f'\\uploads\\resumes\\{pathfile}'
 
                 try:
                     reader = PdfReader(string)
                     for i in range(len(reader.pages)):
                         page = reader.pages[i]
-
-                        data1 = page.extract_text()
-                    
+                        data1 = page.extract_text()                    
                         data2 = data1.lower()
                         # print(data2)
                         for search in searchdata:
-
                             if search in data2:
                                 checkincr += 1
 
                         if checkincr == searchincr:
                             # print("Enterv in success")
-                            result.update({f'result{incr}': data['resume']})
+                            # result.update({f'result{incr}': data['resume']})
+                            result.append({'data': string})
                             incr += 1
                             # print(result)
                             break
@@ -212,7 +213,7 @@ def searchResume(request):
                     print(msg)
                     return JsonResponse({'success': False, 'msg': 'something error found'}, status=200)
             if result:
-                return render(request,"filter.html", {'data': result.items()})
+                return render(request,"filter.html", {'resumes': result})
             else:
                 return JsonResponse({'success': True, 'msg': 'not found'}, status=200)
                
@@ -220,3 +221,7 @@ def searchResume(request):
     return redirect('/login/')
 
 
+# from app1.models import Resumes  # Replace 'yourapp' with the name of your app
+# resumes = Resumes.objects.all()
+# for resume in resumes:
+#     print(resume.resume.url)  # This will print the URL of each uploaded resume

@@ -24,10 +24,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.Index),
     path('register/', views.register),
-    path('profile/', views.profile),
+    path('profile/', views.userProfile),
     path('logout/', views.logoutpage),
     path('login/', views.login),
     path('update/', views.updateResume),
     path('filter/', views.filterResume),
     path('search/', views.searchResume),
-]+static(settings.MEDIA,document_root = settings.MEDIA_ROOT)
+]+static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
