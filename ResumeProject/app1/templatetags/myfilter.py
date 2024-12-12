@@ -4,6 +4,25 @@ from app1.models import Users
 
 register = template.Library()
 
+
+def callPathFile(path):
+    filepath = path[1:]
+    string = ''
+    c = 0
+    for i in range(len(filepath)):
+        if filepath[i] in ('%','2','0'):
+            c += 1
+            if(c == 3):
+                c = 0
+                string += ' '
+        else:
+            if(c == 3):
+                c = 0
+                string += ' '
+            else:
+                string += filepath[i]
+    return string
+
 @register.filter()
 def useremail(id):
     try:
@@ -24,6 +43,19 @@ def imageFind(img):
 
 
 import os
-@register.filter
+@register.filter()
 def basename(value):
     return os.path.basename(value)
+
+
+@register.filter()
+def FileFind(filepath):
+    string = callPathFile(filepath)
+    return string
+
+
+@register.filter()
+def FileFindLocation(filepath):
+    path = callPathFile(filepath)
+    string = f'{settings.BASE_DIR}\\uploads\\resumes\\{path}'
+    return string

@@ -29,4 +29,5 @@ urlpatterns = [
     path('login/', views.login),
     path('update/', views.updateResume),
     path('filter/', views.filterResume),
+    path('search/', views.searchResume),
 ]+static(settings.MEDIA,document_root = settings.MEDIA_ROOT)

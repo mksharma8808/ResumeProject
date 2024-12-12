@@ -5,7 +5,7 @@
 <div class="col-md-9">
     <div class="card shadow p-4">
         <h4 class="text-center mb-4">Filter Resume</h4>
-        <form id="resumeForm">
+        <form id="resumeForm" method="post" action="/search/">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="resume" class="form-label">Enter Search Here:</label>
@@ -15,7 +15,7 @@
             <p>Total Resumes Selected: <span class="fw-boldf" id="totalFiles">0</span></p>
 
             <div class="d-flex justify-content-between mt-4">
-                <button type="button" class="btn btn-primary" id="uploadButton">Search</button>
+                <button type="submit" class="btn btn-primary" id="uploadButton">Search</button>
                 <button type="reset" class="btn btn-secondary" id="clearButton">Clear</button>
             </div>
         </form>
@@ -26,17 +26,42 @@
 
 
 <div class="row">
-    {% for pdf in data %}
+    {% for key,value in data %}
         <div class="pcard">
             <div style="width: 100%;">
-                <p>PDF Name: {{ pdf.resume|basename }}</p>
-                <a href="{{ pdf.resume.url }}" target="_blank">View PDF</a>
+                <p>PDF Name: {{ value|FileFind }}</p>
+                <a href="{{ value|FileFindLocation }}" target="">View PDF</a>
             </div>
         </div>
     {% endfor %}
 </div>
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<!-- <script>
+    document.querySelector("#uploadButton").addEventListener('click', () => {
+        let search = document.querySelector("#searchResume").value;
+        if ( !search ) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/search/',
+            data: {
+                'search': search,
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+            },
+            success: (response)=>{
+                if(response.success) {
+                    alert(response.msg);
+                } else {
+                    alert(response.msg); 
+                }
+            },
+        });
+    });
+</script> -->
 
 <style>
     .pcard {
