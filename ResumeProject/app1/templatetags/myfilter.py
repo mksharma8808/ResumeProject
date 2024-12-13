@@ -59,3 +59,8 @@ def FileFindLocation(filepath):
     path = callPathFile(filepath)
     string = f'{settings.BASE_DIR}\\uploads\\resumes\\{path}'
     return string
+
+@register.filter()
+def UserProfileName(name):
+    n = name[8:]
+    return n

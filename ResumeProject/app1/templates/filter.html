@@ -2,37 +2,69 @@
 {% load myfilter %}
 
 {% block page %}
-<div class="col-md-9">
-    <div class="card shadow p-4">
-        <h4 class="text-center mb-4">Filter Resume</h4>
-        <form id="resumeForm" method="post" action="/search/">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="resume" class="form-label">Enter Search Here:</label>
-                <input type="text" class="form-control" id="searchResume" name="searchResume"
-                    placeholder="Enter Search">
-            </div>
-            <p>Total Resumes Selected: <span class="fw-boldf" id="totalFiles">0</span></p>
+<div class="row justify-content-center">
+    <div class="col-md-12 w-50">
+        <div class="card shadow p-4">
+            <h4 class="text-center mb-4">Filter Resume</h4>
+            <form id="resumeForm" method="post" action="/search/">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="resume" class="form-label">Enter Search Here:</label>
+                    <input type="text" class="form-control" id="searchResume" name="searchResume"
+                        placeholder="Enter Search">
+                </div>
+                <p>Total Resumes Selected: <span class="fw-boldf" id="totalFiles">0</span></p>
 
-            <div class="d-flex justify-content-between mt-4">
-                <button type="submit" class="btn btn-primary" id="uploadButton">Search</button>
-                <button type="reset" class="btn btn-secondary" id="clearButton">Clear</button>
-            </div>
-        </form>
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary" id="uploadButton">Search</button>
+                    <button type="reset" class="btn btn-secondary" id="clearButton">Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-12 w-50">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td>@fat</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
 
 
-
-<ul>
+<div class="row mt-4">
     {% for resume in resumes %}
-        <li>
-            {{ resume.resume.url }}
-            <a href="{{ resume.resume.url }}" target="_blank">{{ resume.resume.name }}</a>
-        </li>
+    <div class="col-md-6">
+        <div>Name : {{ resume.data.resume.name|UserProfileName }}</div>
+        <a href="{{ resume.data.resume.url }}" target="_blank">View Link</a>
+    </div>
     {% endfor %}
-</ul>
+</div>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

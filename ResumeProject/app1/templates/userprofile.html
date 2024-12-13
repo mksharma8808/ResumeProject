@@ -2,60 +2,172 @@
 {% load myfilter %}
 
 {% block containerpage %}
-<link
-    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
-    rel="stylesheet">
 
 <!-- <div class="container mt-5"> -->
-<div class="row justify-content-between">
+<!-- <div class="row justify-content-between"> -->
 
-    <div class="col-md-3">
+<!-- <div class="col-md-3">
         <div class="w-50 d-flex flex-column gap-3">
-            <!-- <div class="d-flex flex-column gap-3"> -->
             <a href="/profile/" class="btn btn-outline-success w-100">Add
                 Resume</a>
             <a href="/filter/" class="btn btn-outline-secondary w-100">Filter
                 Resume</a>
-            <!-- </div> -->
         </div>
-    </div>
+    </div> -->
 
-    {% block page %}
-    <div class="col-md-9">
+{% block page %}
+
+
+ <!-- Bootstrap CSS -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+<div class="row justify-content-center">
+    <div class="col-md-12 w-50">
         <div class="card shadow p-4">
             <h4 class="text-center mb-4">Add Resume</h4>
-            <form action="/update/" id="resumeForm"
-                enctype="multipart/form-data" method="post">
+            <form action="/update/" id="resumeForm" enctype="multipart/form-data" method="post">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="resume" class="form-label">Select
                         Resume:</label>
-                    <input type="file" class="form-control" id="resume"
-                        name="resume" accept=".pdf" multiple>
+                    <input type="file" class="form-control" id="resume" name="resume" accept=".pdf"
+                        multiple="multiple" />
                 </div>
-                <p>Total Resumes Selected: <span class="fw-boldf"
-                        id="totalFiles">0</span></p>
+                <p>Total Resumes Selected: <span class="fw-boldf" id="totalFiles">0</span></p>
                 <div id="fileContainer"></div>
                 <ul id="fileList" class="list-group mb-3"></ul>
                 <div class="d-flex justify-content-between mt-4">
                     <button type="submit" class="btn btn-primary">Upload
                         All</button>
-                    <button type="reset" class="btn btn-secondary"
-                        id="clearButton">Clear</button>
+                    <button type="reset" class="btn btn-secondary" id="clearButton">Clear</button>
                 </div>
             </form>
             <input type="text" id="allimages" hidden />
         </div>
     </div>
+    <!-- <div class="col-md-3">
+
+    </div> -->
     <!-- <h2>Uploaded Resumes</h2> -->
-    
-
-
-    {% endblock page %}
+    <div class="col-md-12 w-50">
+        <div class="d-flex gap-3" style="float: right;">
+            <input type="text" name="" id="" class="form-control w-50">
+            <button type="button" class="btn btn-primary">Search Here</button>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">PDF NAME</th>
+                    <th scope="col">VIEW PDF</th>
+                    <th scope="col">DELETE PDF</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resume in resumes %}
+                <tr>
+                    <th scope="row">{{ resume.id }}</th>
+                    <td>{{ resume.resume.name|UserProfileName }}</td>
+                    <td><a href="{{ resume.resume.url }}" target="_blank" class="btn btn-info">View</a></td>
+                    <td><a  target="_blank" class="btn btn-danger">Delete</a></td>
+                    <!-- <div class="col-md-6">
+                        <div>Name : {{ resume.data.resume.name|UserProfileName }}</div>
+                        <a href="{{ resume.data.resume.url }}" target="_blank">View Link</a>
+                    </div> -->
+                </tr>
+                    {% endfor %}
+                <!-- <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td>@fat</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td colspan="2">Larry the Bird</td>
+                    <td>@twitter</td>
+                </tr> -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+{% endblock page %}
+<!-- </div> -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+
+<script>
+    document.querySelector("#uploadButton").addEventListener('click', () => {
+        let resume = document.querySelector("#multiFiles").value;
+        // console.log(resume);
+        // alert(resume);
+        if (!resume) {
+            return;
+        }
+        // var form_data = new FormData();
+        // 	var ins = document.getElementById('multiFiles').files.length;
+        //     // alert(ins);
+        // 	for (var x = 0; x < ins; x++) {
+        // 		form_data.append("files[]", document.getElementById('multiFiles').files[x]);
+        // 	}
+        // form_data.append({'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val()})
+        // alert(form_data)
+        $.ajax({
+            type: 'POST',
+            url: '/update/',
+            data: {
+                'resume': resume,
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+            },
+            success: (response) => {
+                if (response.success) {
+                    alert("SuccessFully updated!!!");
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                    window.location.reload();
+                }
+            },
+            error: (xhr, status, error) => {
+                console.error("AJAX Error:", error);
+                alert("An error occurred. Please try again.");
+            }
+        });
+    });
+</script>
 
 <!-- <script>
     var xcount = 0;
@@ -145,7 +257,7 @@
 </script> -->
 
 <script>
-    let selectedFiles = new Set(); // Track selected files uniquely
+    let selectedFiles = new Set();
     const fileInput = document.getElementById("resume");
     const fileContainer = document.getElementById("fileContainer");
     const totalFilesElement = document.querySelector("#totalFiles");
@@ -155,7 +267,6 @@
         const files = Array.from(e.target.files);
         let res = '';
 
-        // Add new files to the Set and UI
         files.forEach((file) => {
             if (
                 file.name.toLowerCase().endsWith('.pdf') ||
@@ -193,6 +304,7 @@
         totalFilesElement.textContent = xcount;
         allImagesElement.value = Array.from(selectedFiles).join(',');
     }
+
 </script>
 
 <!-- </div> -->

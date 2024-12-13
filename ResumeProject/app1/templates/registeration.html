@@ -26,7 +26,7 @@
                 Already have an account? <a href="/">Login</a>
             </p>
             <div class="d-flex justify-content-center">
-                <button id="registration-create" class="btn btn-primary mx-2">Create</button>
+                <button type="button" id="registration-create" class="btn btn-primary mx-2">Create</button>
                 <button type="reset" class="btn btn-secondary">Clear</button>
             </div>
         </form>
@@ -40,15 +40,12 @@
 <script>
     document.getElementById("registration-create").addEventListener('click', () => {
         let email = document.getElementById("email").value;
-        // let check = email in endswith("@gmail.com");
-        // console.log(check)
-        // if(!check){
-        //     alert("invalid email-ID")
-        //     return;
-        // }
         let password = document.getElementById("password").value;
         let repassword = document.getElementById("repassword").value;
-        console.log(email, password, repassword);
+        if (!email) {
+            alert("Please Enter Email-ID");
+            return;
+        }
         if (password != repassword) {
             alert("Please check your password");
             return;
@@ -67,6 +64,10 @@
                     window.location.href = response.url_pattern;
                 }
             },
+            error: (xhr, status, error) => {
+                console.error("AJAX Error:", error);
+                alert("An error occurred. Please try again.");
+            }
         });
     });
 

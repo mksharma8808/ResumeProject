@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import datetime
 # Create your models here.
 
 class Users(models.Model):
@@ -7,6 +7,6 @@ class Users(models.Model):
     password = models.CharField(max_length=20)
 
 class Resumes(models.Model):
-    # resume = models.CharField(max_length=255)
     ruid = models.ForeignKey(Users,on_delete=models.CASCADE)
     resume = models.FileField(upload_to='resumes')
+    created_at_time = models.DateTimeField(auto_now_add=True,null=True)

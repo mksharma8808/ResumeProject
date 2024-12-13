@@ -28,23 +28,6 @@ def callPathFile(path):
 
 
 def Index(request):
-    # if request.method == "POST":
-    #     email = request.POST.get("email")
-    #     password = request.POST.get("password")
-        # print(email,password)
-        # return JsonResponse({'success':True},status_code = 200)
-        # return HttpResponse("say hii")
-        # users = Users.objects.all()
-        # # print("users:",users)
-        # for user in users:
-        #     # print(user)
-        #     if email == user.email and password == user.password:
-        #         # messages.SUCCESS(request,"Login Successfully")
-        #         request.session['id'] = user.id
-        #         return JsonResponse({'success':True,'url_pattern':'/profile/','message': 'Login Success'}, status=200)
-        #     # else:
-        # return JsonResponse({'success': False, 'message': 'Login denied!!!'}, status = 200)
-                # messages.WARNING(request,"Login Denied")
     id = request.session.get('id',False)
     if id:
         return redirect('/profile/')
@@ -54,11 +37,11 @@ def login(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        print(email,password)
+        # print(email,password)
         users = Users.objects.all()
         # print("users:",users)
         for user in users:
-            print(user)
+            # print(user)
             if email == user.email and password == user.password:
                 # messages.SUCCESS(request,"Login Successfully")
                 request.session['id'] = user.id
@@ -72,7 +55,7 @@ def register(request):
     if request.method == "POST":
         email = request.POST.get('email')
         password = request.POST.get('password')
-        print(email,password)
+        # print(email,password)
         try:
             obj = Users.objects.get(email=email)
         except Users.DoesNotExist:
@@ -82,17 +65,17 @@ def register(request):
         else:
             set_user = Users(email=email,password=password)
             set_user.save()
-            request.session['id'] = set_user.id
+            # request.session['id'] = set_user.id
             # print(request.session['id'])
-            return JsonResponse({'success': True,'message': 'Registeration successfully!!!','url_pattern':'/profile/'}, status=200)
+            return JsonResponse({'success': True,'message': 'Registeration successfully!!!','url_pattern':'/login/'}, status=200)
         # return HttpResponse("registeration successfully")
     return render(request,"registeration.html")
 
 def userProfile(request):
     id = request.session.get('id', False)
     if id:
-        # resumes = Resumes.objects.filter(ruid_id=id)  # Fetch user's resumes
-        return render(request, "userprofile.html")
+        resumes = Resumes.objects.filter(ruid_id=id)[::-1]
+        return render(request, "userprofile.html", {'resumes': resumes})
     return redirect('/login/')
 
 
@@ -103,6 +86,8 @@ def logoutpage(request):
     return redirect('/')
 
 from django.core.files.storage import FileSystemStorage
+import json
+from datetime import datetime
 
 def updateResume(request):
     id = request.session.get('id',False)
@@ -110,10 +95,16 @@ def updateResume(request):
         if request.method == "POST":
             try:
                 files = request.FILES.getlist('resume') 
+                # data = json.loads(request.body)
+                # print(data)
+
+
                 if not files:
                     return JsonResponse({'success': False, 'message': 'No files uploaded!'}, status=400)
                 
+                # count = 0
                 for file in files:
+                    # count += 1
                     if not file.name.lower().endswith(('.pdf', '.doc', '.docx', '.txt')):
                         return JsonResponse({'success': False, 'message': f'Invalid file type: {file.name}'}, status=400)
                     
@@ -133,33 +124,40 @@ def updateResume(request):
                     #     print("success")
                     # except Exception as msg:
                     #     print(msg)
-                     # Save each file directly using Django's FileField
+
                     Resumes.objects.create(
-                        resume=file,  # Save the file to the media folder
-                        ruid_id=id    # Associate with the logged-in user
+                        resume=file, 
+                        ruid_id=id,
+                        created_at_time=datetime.now
                     )
+                # print(count)
                 return redirect('/profile/')
+            
             except Exception as msg:
                 print(msg)
                 return JsonResponse({'success': False}, status = 404)
+            
         return render(request,"userprofile.html")
     return JsonResponse({'success':False,'message':"Please login!!"}, status=200)
 
 def filterResume(request):
     id = request.session.get('id',False)
     if id:
-        # data = Resumes.objects.all().values('resume')
-        resumes = Resumes.objects.filter(ruid_id=id)
-        return render(request, "filter.html", {'resumes': resumes})
+        # resumes = Resumes.objects.all()
+        # resumes = Resumes.objects.filter(ruid_id=id)
+        # return render(request, "filter.html", {'resumes': resumes})
+        return render(request, "filter.html")
     return redirect('/')
 
 
-def rootClear(path):
-    # for i in path:
-    #     print(i)
-    print(path)
-    
-    return False
+def pathfile(path):
+    str1 = ''
+    for i in path:
+        if i == '/':
+            str1 += '\\'
+        else:
+            str1 += i
+    return str1
 
 # Create your tests here.
 from pypdf import PdfReader
@@ -176,19 +174,22 @@ def searchResume(request):
             # print(searchdata,searchincr)
             # resume = Resumes.objects.all().values('resume')
             resume = Resumes.objects.all()
-            print(list(resume))
+            # print(list(resume))
             result = []
-            incr = 0
+            # incr = 0
 
             for data in resume:
-                print(type(data.resume))
-                # checkincr = 0
+                # print(type(data.resume.url))
+                checkincr = 0
                 # pathfile = callPathFile(data['resume'])
-                root = rootClear(data.resume)
-                print(root)
-                string = f'{settings.BASE_DIR}\media\{data.resume}'
-                print(string)
-                # string += f'\\uploads\\resumes\\{pathfile}'
+                # root = rootClear(data.resume)
+                # print(root)
+                # string = f'{settings.BASE_DIR}/media/{data.resume}'
+                string = f'{data.resume.url}'
+                string = pathfile(string)
+                string = f'{settings.BASE_DIR}{string}'
+                # print(path,type(path))
+                # print(string)
 
                 try:
                     reader = PdfReader(string)
@@ -202,17 +203,14 @@ def searchResume(request):
                                 checkincr += 1
 
                         if checkincr == searchincr:
-                            # print("Enterv in success")
-                            # result.update({f'result{incr}': data['resume']})
-                            result.append({'data': string})
-                            incr += 1
-                            # print(result)
+                            result.append({'data': data})
                             break
 
                 except Exception as msg:
                     print(msg)
                     return JsonResponse({'success': False, 'msg': 'something error found'}, status=200)
             if result:
+                # print(result)
                 return render(request,"filter.html", {'resumes': result})
             else:
                 return JsonResponse({'success': True, 'msg': 'not found'}, status=200)
