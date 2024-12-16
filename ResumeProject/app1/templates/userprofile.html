@@ -58,7 +58,7 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">ID</th>
+                    <!-- <th scope="col">ID</th> -->
                     <th scope="col">PDF NAME</th>
                     <th scope="col">VIEW PDF</th>
                     <th scope="col">DELETE PDF</th>
@@ -67,57 +67,12 @@
             <tbody>
                 {% for resume in resumes %}
                 <tr>
-                    <th scope="row">{{ resume.id }}</th>
+                    <!-- <th scope="row">{{ resume.id }}</th> -->
                     <td>{{ resume.resume.name|UserProfileName }}</td>
                     <td><a href="{{ resume.resume.url }}" target="_blank" class="btn btn-info">View</a></td>
-                    <td><a  target="_blank" class="btn btn-danger">Delete</a></td>
-                    <!-- <div class="col-md-6">
-                        <div>Name : {{ resume.data.resume.name|UserProfileName }}</div>
-                        <a href="{{ resume.data.resume.url }}" target="_blank">View Link</a>
-                    </div> -->
+                    <td><a href="/delete-resume/{{ resume.id }}/" target="_blank" class="btn btn-danger">Delete</a></td>
                 </tr>
-                    {% endfor %}
-                <!-- <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr> -->
+                {% endfor %}
             </tbody>
         </table>
     </div>

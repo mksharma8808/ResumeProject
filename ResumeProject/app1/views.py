@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse,HttpResponse,HttpResponseRedirect
 from .models import Users, Resumes
 from django.contrib import messages
@@ -85,8 +85,8 @@ def logoutpage(request):
         del request.session['id']
     return redirect('/')
 
-from django.core.files.storage import FileSystemStorage
-import json
+# from django.core.files.storage import FileSystemStorage
+# import json
 from datetime import datetime
 
 def updateResume(request):
@@ -168,28 +168,16 @@ def searchResume(request):
     if id:
         if request.method == 'POST':
             search = request.POST.get('searchResume').lower()
-            # print(search)
             searchdata = search.split(' ')
             searchincr = len(searchdata)
-            # print(searchdata,searchincr)
-            # resume = Resumes.objects.all().values('resume')
             resume = Resumes.objects.all()
-            # print(list(resume))
             result = []
-            # incr = 0
 
             for data in resume:
-                # print(type(data.resume.url))
                 checkincr = 0
-                # pathfile = callPathFile(data['resume'])
-                # root = rootClear(data.resume)
-                # print(root)
-                # string = f'{settings.BASE_DIR}/media/{data.resume}'
                 string = f'{data.resume.url}'
                 string = pathfile(string)
                 string = f'{settings.BASE_DIR}{string}'
-                # print(path,type(path))
-                # print(string)
 
                 try:
                     reader = PdfReader(string)
@@ -223,3 +211,13 @@ def searchResume(request):
 # resumes = Resumes.objects.all()
 # for resume in resumes:
 #     print(resume.resume.url)  # This will print the URL of each uploaded resume
+
+
+def delete_resume(request, resume_id):
+    try:
+        resume = get_object_or_404(Resumes, id=resume_id)
+        resume.delete()
+    except Exception as msg:
+        print(msg)
+    finally:
+        return HttpResponseRedirect('/profile/')

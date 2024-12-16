@@ -30,4 +30,5 @@ urlpatterns = [
     path('update/', views.updateResume),
     path('filter/', views.filterResume),
     path('search/', views.searchResume),
+    path('delete-resume/<int:resume_id>/', views.delete_resume, name='delete_resume'),
 ]+static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
