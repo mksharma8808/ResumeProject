@@ -51,10 +51,13 @@
     </div> -->
     <!-- <h2>Uploaded Resumes</h2> -->
     <div class="col-md-12 w-50">
-        <div class="d-flex gap-3" style="float: right;">
-            <input type="text" name="" id="" class="form-control w-50">
-            <button type="button" class="btn btn-primary">Search Here</button>
-        </div>
+        <!-- <div class="d-flex gap-3" style="float: right;"> -->
+            <form method="post" action="/search-resume/" class="d-flex gap-5" style="float: right;">
+                {% csrf_token %}
+                <input type="text" name="searchResume" id="searchResume" class="form-control w-50">
+                <button type="submit" class="btn btn-primary">Search Here</button>
+            </form>
+        <!-- </div> -->
         <table class="table">
             <thead>
                 <tr>
@@ -65,14 +68,25 @@
                 </tr>
             </thead>
             <tbody>
-                {% for resume in resumes %}
-                <tr>
-                    <!-- <th scope="row">{{ resume.id }}</th> -->
-                    <td>{{ resume.resume.name|UserProfileName }}</td>
-                    <td><a href="{{ resume.resume.url }}" target="_blank" class="btn btn-info">View</a></td>
-                    <td><a href="/delete-resume/{{ resume.id }}/" target="_blank" class="btn btn-danger">Delete</a></td>
-                </tr>
-                {% endfor %}
+                {% if not filter_id %}
+                    {% for resume in resumes %}
+                    <tr>
+                        <!-- <th scope="row">{{ resume.id }}</th> -->
+                        <td>{{ resume.resume.name|UserProfileName }}</td>
+                        <td><a href="{{ resume.resume.url }}" target="_blank" class="btn btn-info">View</a></td>
+                        <td><a href="/delete-resume/{{ resume.id }}/" target="_blank" class="btn btn-danger">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    {% for resume in resumes %}
+                    <tr>
+                        <!-- <th scope="row">{{ resume.id }}</th> -->
+                        <td>{{ resume.data.resume.name|UserProfileName }}</td>
+                        <td><a href="{{ resume.data.resume.url }}" target="_blank" class="btn btn-info">View</a></td>
+                        <td><a href="/delete-resume/{{ resume.data.id }}/" target="_blank" class="btn btn-danger">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
             </tbody>
         </table>
     </div>

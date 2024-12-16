@@ -3,6 +3,8 @@ from django.http import JsonResponse,HttpResponse,HttpResponseRedirect
 from .models import Users, Resumes
 from django.contrib import messages
 from django.conf import settings
+from django.views import View
+# from django.contrib import messages
 # Create your views here.
 
 
@@ -168,12 +170,13 @@ def searchResume(request):
     if id:
         if request.method == 'POST':
             search = request.POST.get('searchResume').lower()
-            searchdata = search.split(' ')
-            searchincr = len(searchdata)
-            resume = Resumes.objects.all()
+            resume = Resumes.objects.filter(ruid_id = id)
             result = []
 
             for data in resume:
+                searchdata = search.split(' ')
+                len_of_search = len(searchdata)
+                # print(searchdata,len_of_search)
                 checkincr = 0
                 string = f'{data.resume.url}'
                 string = pathfile(string)
@@ -181,16 +184,22 @@ def searchResume(request):
 
                 try:
                     reader = PdfReader(string)
+                    # print(len(reader.pages))
                     for i in range(len(reader.pages)):
                         page = reader.pages[i]
                         data1 = page.extract_text()                    
                         data2 = data1.lower()
                         # print(data2)
-                        for search in searchdata:
-                            if search in data2:
-                                checkincr += 1
-
-                        if checkincr == searchincr:
+                        for i in range(len_of_search):
+                            for search in searchdata:
+                                if search in data2:
+                                    # print(searchdata)
+                                    checkincr += 1
+                                    searchdata.remove(search)
+                        # print(checkincr)
+                        if checkincr == len_of_search:
+                            # print("added now")
+                            # checkincr = 0
                             result.append({'data': data})
                             break
 
@@ -198,12 +207,12 @@ def searchResume(request):
                     print(msg)
                     return JsonResponse({'success': False, 'msg': 'something error found'}, status=200)
             if result:
-                # print(result)
-                return render(request,"filter.html", {'resumes': result})
+                print(result)
+                return render(request,"userprofile.html", {'resumes': result,'filter_id': 'success'})
             else:
                 return JsonResponse({'success': True, 'msg': 'not found'}, status=200)
-               
-        return render(request,"filter.html")
+        resume = Resumes.objects.filter(ruid_id = id)     
+        return render(request,"userprofile.html",{'resumes': resume})
     return redirect('/login/')
 
 
@@ -221,3 +230,126 @@ def delete_resume(request, resume_id):
         print(msg)
     finally:
         return HttpResponseRedirect('/profile/')
+    
+
+class Admin_Panel(View):
+    def post(self,request):
+        self.email = request.POST.get('email')
+        self.password = request.POST.get('password')
+        if self.email != 'admin123@gmail.com':
+            return JsonResponse({'status': False,'message': 'Incorrect Admin Email!!'}, status=200)
+        if self.password != 'admin123':
+            return JsonResponse({'status': False,'message': 'Incorrect Admin Password!!'}, status=200)
+        request.session['admin'] = 'admin'
+        return JsonResponse({'status': True,'message': 'Successfully Admin login','url_pattern': '/dashboard/'}, status=200)
+    
+    def get(Self,request):
+        admin = request.session.get('admin',False)
+        if admin:
+            return redirect('/dashboard/')
+        return render(request,"adminlogin.html")
+    
+class Admin_Dashboard(View):
+    def get(self,request):
+        self.admin = request.session.get('admin',False)
+        if not self.admin:
+            return redirect('/admin/')
+        return render(request,"dashboard.html")
+    def post(self,request):
+        pass
+    
+
+class Admin_Logout(View):
+    def get(self,request):
+        self.admin = request.session.get('admin',False)
+        if self.admin:
+            del request.session['admin']
+        return redirect('/admin/') 
+
+class All_users(View):
+    def get(self,request):
+        self.admin = request.session.get('admin',False)
+        if not self.admin:
+            return redirect('/admin/')
+        self.users_obj = Users.objects.all()
+        return render(request, 'dashboard.html', {'users': self.users_obj})
+    
+class All_resumes(View):
+    def get(self,request):
+        self.admin = request.session.get('admin',False)
+        if not self.admin:
+            return redirect('/admin/')
+        self.resumes = Resumes.objects.all()
+        return render(request,"dashboard.html",{'resumes': self.resumes})
+    
+def delete_resumes(id):
+    obj = Resumes.objects.filter(ruid_id=id)
+    for resume in obj:
+        res = get_object_or_404(Resumes, id=resume.id)
+        res.delete()
+
+def delete_user(request, user_id):
+    try:
+        user = Users.objects.get(id = user_id)
+        delete_resumes(user.id)
+        id = request.session.get('id', False)
+        if id:
+            if id == user_id:
+                del request.session['id']
+        user.delete()
+    except Exception as msg:
+        print(msg)
+    finally:
+        return HttpResponseRedirect('/users/')
+    
+class Filter_resumes(View):
+    def post(self,request):
+        self.search = request.POST.get('searchResume').lower()
+        self.resume = Resumes.objects.all()
+        self.result = []
+
+        for data in self.resume:
+            self.searchdata = self.search.split(' ')
+            self.len_of_search = len(self.searchdata)
+            # print(searchdata,len_of_search)
+            self.checkincr = 0
+            self.string = f'{data.resume.url}'
+            self.string = pathfile(self.string)
+            self.string = f'{settings.BASE_DIR}{self.string}'
+
+            try:
+                self.reader = PdfReader(self.string)
+                # print(len(reader.pages))
+                for i in range(len(self.reader.pages)):
+                    self.page = self.reader.pages[i]
+                    self.data1 = self.page.extract_text()                    
+                    self.data2 = self.data1.lower()
+                    # print(self.data2)
+                    for i in range(self.len_of_search):
+                        for search in self.searchdata:
+                            if search in self.data2:
+                                self.checkincr += 1
+                                self.searchdata.remove(search)
+                    if self.checkincr == self.len_of_search:
+                        self.result.append({'data': data})
+                        break
+
+            except Exception as msg:
+                print(msg)
+                messages.danger(request, "something error found")
+                return redirect('/resumes/')
+                # return render(request,"dashboard.html", {'resumes': self.resume})
+                # return JsonResponse({'success': False, 'msg': 'something error found'}, status=200)
+        if self.result:
+            # print(self.result)
+            return render(request,"dashboard.html", {'resumes': self.result,'filter_id': 'success'})
+        else:
+            messages.warning(request, "Resume not found")
+            return redirect('/resumes/')
+            # return render(request,"dashboard.html", {'resumes': self.resume})
+            # return JsonResponse({'success': True, 'msg': 'not found'}, status=200)
+    def get(self,request):
+        self.admin = request.session.get('admin',False)
+        if not self.admin:
+            return redirect('/admin/')
+        return HttpResponseRedirect('/resumes/')

@@ -1,0 +1,160 @@
+{% load static %}
+{% load myfilter %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="{% static 'mystyle.css' %}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        .sidenav {
+            height: 100%;
+            width: 230px;
+            position: fixed;
+            z-index: 1;
+            top: 65px;
+            left: 0;
+            background-color: #f9f5f5;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+
+        .sidenav a {
+            padding: 6px 8px 6px 16px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+        }
+
+        .sidenav a:hover {
+            color: #100f0f;
+        }
+
+        .main {
+            margin-left: 230px;
+            /* Same as the width of the sidenav */
+            margin-top: 70px;
+            /* Same as the height of the sidenav */
+            font-size: 20px;
+            /* Increased text to enable scrolling */
+            padding: 10px 10px;
+        }
+
+        @media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+            .sidenav a {
+                font-size: 18px;
+            }
+        }
+
+        
+    </style>
+</head>
+
+<body>
+    <div class="header w-100" style="position: fixed;">
+        <div class="font-size">Welcome: Admin Dashboard</div>
+        <div>
+            <a class="font-size btn btn-outline-primary">Admin Profile</a>
+            <a class="font-size btn btn-outline-secondary" href="/admin-logout/">Log out</a>
+        </div>
+    </div>
+
+    <div class="container row">
+        <div class="sidenav">
+            <a href="{% url 'users' %}">All Users</a>
+            <a href="/resumes/">All Resumes</a>
+            <!-- <a href="#clients">Clients</a>
+            <a href="#contact">Contact</a> -->
+        </div>
+
+        <div class="main">
+            
+            {% if users %}
+            <div class="row col-md-12 justify-content-between">
+                {% for user in users %}
+                <div class="col-md-3 shadow m-2">
+                    <p>Email : {{user.email}}</p>
+                    <p><a href="/view-user/{{ user.id }}/" target="_blank">View Link</a></p>
+                    <p><a href="/delete-user/{{ user.id }}/" target="_self" class="btn btn-danger">Delete</a></p>
+                </div>
+                {% endfor %}
+            </div>
+            {% elif resumes %}
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{message.tags}} alert-dismissible fade show" id="alert-div" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="close-btn"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+            <!-- <h2>Uploaded Resumes</h2> -->
+            <div class="col-md-12 w-100">
+                <!-- <div class="d-flex gap-3" style="float: right;"> -->
+                <form method="post" action="/filter-resumes/" class="d-flex gap-5" style="float: right;">
+                    {% csrf_token %}
+                    <input type="text" name="searchResume" id="searchResume" class="form-control w-50">
+                    <button type="submit" class="btn btn-primary">Search Here</button>
+                </form>
+                <!-- </div> -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <!-- <th scope="col">ID</th> -->
+                            <th scope="col">PDF NAME</th>
+                            <th scope="col">VIEW PDF</th>
+                            <th scope="col">DELETE PDF</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if not filter_id %}
+                        {% for resume in resumes %}
+                        <tr>
+                            <!-- <th scope="row">{{ resume.id }}</th> -->
+                            <td>{{ resume.resume.name|UserProfileName }}</td>
+                            <td><a href="{{ resume.resume.url }}" target="_blank" class="btn btn-info">View</a></td>
+                            <td><a href="/delete-resume/{{ resume.id }}/" target="_blank"
+                                    class="btn btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        {% for resume in resumes %}
+                        <tr>
+                            <!-- <th scope="row">{{ resume.id }}</th> -->
+                            <td>{{ resume.data.resume.name|UserProfileName }}</td>
+                            <td><a href="{{ resume.data.resume.url }}" target="_blank" class="btn btn-info">View</a>
+                            </td>
+                            <td><a href="/delete-resume/{{ resume.data.id }}/" target="_blank"
+                                    class="btn btn-danger">Delete</a></td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <script>
+        document.querySelector("#close-btn").addEventListener('click',() => {
+            document.querySelector("#alert-div").style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>

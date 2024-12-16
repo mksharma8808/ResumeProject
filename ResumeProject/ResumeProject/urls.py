@@ -21,7 +21,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
+    path('admin/', views.Admin_Panel.as_view()),
+    path('dashboard/', views.Admin_Dashboard.as_view()),
+    path('admin-logout/', views.Admin_Logout.as_view()),
+    path('users/', views.All_users.as_view(), name='users'),
+    path('resumes/', views.All_resumes.as_view(), name='resumes'),
+    path('filter-resumes/', views.Filter_resumes.as_view(), name='filter_resumes'),
+    path('delete-user/<int:user_id>/', views.delete_user),
     path('', views.Index),
     path('register/', views.register),
     path('profile/', views.userProfile),
@@ -29,6 +36,6 @@ urlpatterns = [
     path('login/', views.login),
     path('update/', views.updateResume),
     path('filter/', views.filterResume),
-    path('search/', views.searchResume),
+    path('search-resume/', views.searchResume, name= 'search_resume'),
     path('delete-resume/<int:resume_id>/', views.delete_resume, name='delete_resume'),
 ]+static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
