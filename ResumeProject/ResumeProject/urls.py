@@ -35,7 +35,8 @@ urlpatterns = [
     path('logout/', views.logoutpage),
     path('login/', views.login),
     path('update/', views.updateResume),
-    path('filter/', views.filterResume),
-    path('search-resume/', views.searchResume, name= 'search_resume'),
+    path('filter/', views.User_Filter_resumes.as_view()),
+    # path('search-resume/', views.Search_Resume.as_view(), name= 'search_resume'),
     path('delete-resume/<int:resume_id>/', views.delete_resume, name='delete_resume'),
+    path('admin-delete-resume/<int:resume_id>/', views.admin_delete_resume, name='admin_delete_resume'),
 ]+static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)

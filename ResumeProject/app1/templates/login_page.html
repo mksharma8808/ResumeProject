@@ -74,8 +74,12 @@
             let email = document.getElementById("email").value;
             let password = document.getElementById("password").value;
             //  console.log(email, password);
-            if (!email || !password) {
-                alert("Please Enter email & password")
+            if ( !email ) {
+                alert("Please enter email!");
+                return;
+            }
+            if ( !password ) {
+                alert("Please enter password!");
                 return;
             }
             $.ajax({
@@ -92,7 +96,6 @@
                         window.location.href = response.url_pattern;
                     } else {
                         alert(response.message);
-                        window.location.reload();
                     }
                 },
                 error: (xhr, status, error) => {

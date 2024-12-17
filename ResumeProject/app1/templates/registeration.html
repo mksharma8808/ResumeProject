@@ -46,6 +46,14 @@
             alert("Please Enter Email-ID");
             return;
         }
+        if ( !password ) {
+            alert('Please enter password!');
+            return;
+        }
+        if ( !repassword ) {
+            alert('Please enter re-password!');
+            return;
+        }
         if (password != repassword) {
             alert("Please check your password");
             return;
@@ -62,6 +70,8 @@
                 if (response.success) {
                     alert(response.message);
                     window.location.href = response.url_pattern;
+                } else {
+                    alert(response.message);
                 }
             },
             error: (xhr, status, error) => {

@@ -125,8 +125,7 @@
                             <!-- <th scope="row">{{ resume.id }}</th> -->
                             <td>{{ resume.resume.name|UserProfileName }}</td>
                             <td><a href="{{ resume.resume.url }}" target="_blank" class="btn btn-info">View</a></td>
-                            <td><a href="/delete-resume/{{ resume.id }}/" target="_blank"
-                                    class="btn btn-danger">Delete</a>
+                            <td><a href="/admin-delete-resume/{{ resume.id }}/" class="btn btn-danger">Delete</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -137,8 +136,7 @@
                             <td>{{ resume.data.resume.name|UserProfileName }}</td>
                             <td><a href="{{ resume.data.resume.url }}" target="_blank" class="btn btn-info">View</a>
                             </td>
-                            <td><a href="/delete-resume/{{ resume.data.id }}/" target="_blank"
-                                    class="btn btn-danger">Delete</a></td>
+                            <td><a href="/delete-resume/{{ resume.data.id }}/" class="btn btn-danger">Delete</a></td>
                         </tr>
                         {% endfor %}
                         {% endif %}
