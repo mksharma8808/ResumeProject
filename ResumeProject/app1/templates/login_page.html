@@ -11,7 +11,8 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 </head>
 
@@ -30,38 +31,47 @@
     </div>
 
     <div class="container justify-content-center">
-        
+
         {% if not index %}
         {% block containerpage %}
-        
-        
+
+
         {% endblock containerpage %}
         {% else %}
         <div class="col-md-12">
             <!-- <div class="row"> -->
-                <!-- <div class=""> -->
-                <div class="title">Login Page</div>
-                <form method="post" class="shadow p-4 bg-light rounded">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email">
+            <!-- <div class=""> -->
+            <div class="title">Login Page</div>
+            <form method="post" class="shadow p-4 bg-light rounded" action="/login/">
+                {% csrf_token %}
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{message.tags}} alert-dismissible border-black fade show" id="alert-div" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                            id="close-btn"></button>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" id="password"
-                            placeholder="Enter your password">
-                    </div>
-                    <p class="small">Create an account? <a href="/register/">New user</a></p>
-                    <div class="d-flex justify-content-center">
-                        <button id="login-click" type="button" class="btn btn-primary mx-2">Login</button>
-                        <button type="reset" class="btn btn-secondary">Clear</button>
-                    </div>
-                </form>
+                    {% endfor %}
+                    {% endif %}
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" id="password"
+                        placeholder="Enter your password">
+                </div>
+                <p class="small">Create an account? <a href="/register/">New user</a></p>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary mx-2">Login</button>
+                    <button type="reset" class="btn btn-secondary">Clear</button>
+                </div>
+            </form>
             <!-- </div> -->
-        <!-- </div> -->
+            <!-- </div> -->
         </div>
-        
+
         {% endif %}
     </div>
 
@@ -69,7 +79,14 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        document.querySelector("#close-btn").addEventListener('click',() => {
+            document.querySelector("#alert-div").style.display = 'none';
+        });
+    </script>
+
+    <!-- <script>
         document.querySelector("#login-click").addEventListener('click', () => {
             let email = document.getElementById("email").value;
             let password = document.getElementById("password").value;
@@ -103,12 +120,14 @@
                     alert("An error occurred. Please try again.");
                 }
             });
-        });
+        }); 
 
-    </script>
+    </script> -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 
 </body>
 

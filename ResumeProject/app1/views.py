@@ -17,23 +17,23 @@ def check(email):
         return False
 
 
-def callPathFile(path):
-    filepath = path[1:]
-    string = ''
-    c = 0
-    for i in range(len(filepath)):
-        if filepath[i] in ('%','2','0'):
-            c += 1
-            if(c == 3):
-                c = 0
-                string += ' '
-        else:
-            if(c == 3):
-                c = 0
-                string += ' '
-            else:
-                string += filepath[i]
-    return string
+# def callPathFile(path):
+#     filepath = path[1:]
+#     string = ''
+#     c = 0
+#     for i in range(len(filepath)):
+#         if filepath[i] in ('%','2','0'):
+#             c += 1
+#             if(c == 3):
+#                 c = 0
+#                 string += ' '
+#         else:
+#             if(c == 3):
+#                 c = 0
+#                 string += ' '
+#             else:
+#                 string += filepath[i]
+#     return string
 
 
 
@@ -48,6 +48,12 @@ def login(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
+        if not email:
+            messages.info(request, "Please enter email!")
+            return HttpResponseRedirect('/')
+        if not password:
+            messages.info(request, "Please enter password!")
+            return HttpResponseRedirect('/')
         users = Users.objects.all()
         emailboolean = False
         for user in users:
@@ -55,11 +61,15 @@ def login(request):
                 emailboolean = True
                 if password == user.password:
                     request.session['id'] = user.id
-                    return JsonResponse({'success':True,'url_pattern':'/profile/','message': 'Login Success'}, status=200)
+                    return redirect('/profile/')
+                    # return JsonResponse({'success':True,'url_pattern':'/profile/','message': 'Login Success'}, status=200)
         if not emailboolean:
-            return JsonResponse({'success':False,'message': 'Invalid email!'}, status=200)
+            messages.info(request, "Invalid email!")
+            # return JsonResponse({'success':False,'message': 'Invalid email!'}, status=200)
         else:
-            return JsonResponse({'success': False, 'message': 'Invalid password!'}, status = 200)
+            messages.info(request, "Invalid password!")
+            # return JsonResponse({'success': False, 'message': 'Invalid password!'}, status = 200)
+        return HttpResponseRedirect('/')
     id = request.session.get('id', False)
     if id:
         return HttpResponseRedirect('/')
@@ -68,23 +78,41 @@ def login(request):
 def register(request):
     if request.method == "POST":
         email = request.POST.get('email')
+        if not email:
+            messages.warning(request, "Please enter email!")
+            return HttpResponseRedirect('/register/')
         booleanValue = check(email)
         if not booleanValue:
-            return JsonResponse({'success':False,'message': 'Please check your email!!'}, status=200)
+            messages.error(request, "Please check your email!")
+            return redirect('/register/')
+            # return JsonResponse({'success':False,'message': 'Please check your email!!'}, status=200)
         password = request.POST.get('password')
-        # print(email,password)
+        if not password:
+            messages.warning(request, "Please enter password!")
+            return redirect('/register/')
+        repassword = request.POST.get('repassword')
+        if not repassword:
+            messages.warning(request, "Please enter re-password!")
+            return redirect('/register/')
+        if password != repassword:
+            messages.warning(request, "Both password doesn't matched!")
+            return redirect('/register/')
         try:
             obj = Users.objects.get(email=email)
         except Users.DoesNotExist:
             obj = False
         if obj:
-            return JsonResponse({'success': True,'message': 'User Already Registered!!!','url_pattern':'/register/'}, status=200)
+            messages.error(request, 'User Already Registered!')
+            return redirect('/register/')
+            # return JsonResponse({'success': True,'message': 'User Already Registered!!!','url_pattern':'/register/'}, status=200)
         else:
             set_user = Users(email=email,password=password)
             set_user.save()
             # request.session['id'] = set_user.id
             # print(request.session['id'])
-            return JsonResponse({'success': True,'message': 'Registeration successfully!!!','url_pattern':'/login/'}, status=200)
+            messages.success(request, 'Registeration successfully!')
+            return redirect('/register/')
+            # return JsonResponse({'success': True,'message': 'Registeration successfully!!!','url_pattern':'/login/'}, status=200)
         # return HttpResponse("registeration successfully")
     return render(request,"registeration.html")
 
@@ -249,8 +277,8 @@ from pypdf import PdfReader
 class User_Filter_resumes(View):
     def post(self,request):
         self.id = request.session.get('id',False)
-        if not self.id:
-            return redirect('/')
+        # if not self.id:
+        #     return redirect('/')
         self.search = request.POST.get('searchResume').lower()
         self.resume = Resumes.objects.filter(ruid_id = self.id)
         self.result = []
@@ -326,6 +354,32 @@ def delete_resume(request, resume_id):
     finally:
         return HttpResponseRedirect('/profile/')
     
+def multiple_delete_resume(request):
+    if request.method == "POST":
+        values = request.POST.get('checkbox_selection')
+        if not values:
+            messages.warning(request, "Please select the files!")
+            return redirect('/')
+        data = values.split(',')
+        for val in data:
+            resume = get_object_or_404(Resumes, id=int(val))
+            resume.delete()
+        messages.success(request,f"Total {len(data)} files deleted!")
+    return HttpResponseRedirect('/')
+
+def admin_multiple_delete_resume(request):
+    if request.method == "POST":
+        values = request.POST.get('checkbox_selection')
+        if not values:
+            messages.warning(request, "Please select the files!")
+            return redirect('/resumes/')
+        data = values.split(',')
+        for val in data:
+            resume = get_object_or_404(Resumes, id=int(val))
+            resume.delete()
+        messages.success(request,f"Total {len(data)} files deleted!")
+    return HttpResponseRedirect('/resumes/')
+    
 def admin_delete_resume(request, resume_id):
     try:
         resume = get_object_or_404(Resumes, id=resume_id)
@@ -379,6 +433,8 @@ class Admin_Logout(View):
             del request.session['admin']
         return redirect('/admin/') 
 
+# print("Dict:",list(globals))
+
 class All_users(View):
     def get(self,request):
         self.admin = request.session.get('admin',False)
@@ -392,8 +448,10 @@ class All_resumes(View):
         self.admin = request.session.get('admin',False)
         if not self.admin:
             return redirect('/admin/')
-        self.resumes = Resumes.objects.all()
-        return render(request,"dashboard.html",{'resumes': self.resumes})
+        self.resumes = Resumes.objects.all()[::-1]
+        val = self.resumes[0].id
+        # print(val)
+        return render(request,"dashboard.html",{'resumes': self.resumes,'serial': val})
     
 def delete_resumes(id):
     obj = Resumes.objects.filter(ruid_id=id)
@@ -466,3 +524,13 @@ class Filter_resumes(View):
         if not self.admin:
             return redirect('/admin/')
         return HttpResponseRedirect('/resumes/')
+    
+class Filter_delete_resumes(View):
+    def get(self,request,resume_id):
+        try:
+            resume = get_object_or_404(Resumes, id=resume_id)
+            resume.delete()
+        except Exception as msg:
+            print(msg)
+        finally:
+            return HttpResponseRedirect('/filter-resumes/')

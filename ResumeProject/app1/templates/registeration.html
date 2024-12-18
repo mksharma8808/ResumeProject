@@ -6,8 +6,17 @@
 <h2 class="title">Registration Page</h2>
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <form class="shadow p-4 bg-light rounded" method="post">
+        <form class="shadow p-4 bg-light rounded" method="post" action="/register/">
             {% csrf_token %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{message.tags}} alert-dismissible border-black fade show" id="alert-div" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                    id="close-btn"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
             <div class="mb-3">
                 <label for="email" class="form-label">Email-ID:</label>
                 <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email">
@@ -26,7 +35,7 @@
                 Already have an account? <a href="/">Login</a>
             </p>
             <div class="d-flex justify-content-center">
-                <button type="button" id="registration-create" class="btn btn-primary mx-2">Create</button>
+                <button type="submit" class="btn btn-primary mx-2">Create</button>
                 <button type="reset" class="btn btn-secondary">Clear</button>
             </div>
         </form>
@@ -37,7 +46,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 
-<script>
+<!-- <script>
     document.getElementById("registration-create").addEventListener('click', () => {
         let email = document.getElementById("email").value;
         let password = document.getElementById("password").value;
@@ -81,6 +90,6 @@
         });
     });
 
-</script>
+</script> -->
 
 {% endblock containerpage %}

@@ -64,3 +64,15 @@ def FileFindLocation(filepath):
 def UserProfileName(name):
     n = name[8:]
     return n
+
+
+# @register.filter()
+# def Serial_Number(id,serial):
+#     return (serial-(id-1))
+
+id = 0
+@register.filter()
+def serialno(rid='key'):
+    global id
+    id = id+1
+    return id

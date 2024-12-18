@@ -28,6 +28,8 @@ urlpatterns = [
     path('users/', views.All_users.as_view(), name='users'),
     path('resumes/', views.All_resumes.as_view(), name='resumes'),
     path('filter-resumes/', views.Filter_resumes.as_view(), name='filter_resumes'),
+    path('filter-delete-resumes/<int:resume_id>/', views.Filter_delete_resumes.as_view(), name='filter_delete_resumes'),
+    path('adminmultiDelete/', views.admin_multiple_delete_resume, name='multi_delete_resume'),
     path('delete-user/<int:user_id>/', views.delete_user),
     path('', views.Index),
     path('register/', views.register),
@@ -38,5 +40,7 @@ urlpatterns = [
     path('filter/', views.User_Filter_resumes.as_view()),
     # path('search-resume/', views.Search_Resume.as_view(), name= 'search_resume'),
     path('delete-resume/<int:resume_id>/', views.delete_resume, name='delete_resume'),
+    path('multiDelete/', views.multiple_delete_resume, name='multi_delete_resume'),
+    # path('delete-resume/<int:resume_id>/', views.delete_resume, name='delete_resume'),
     path('admin-delete-resume/<int:resume_id>/', views.admin_delete_resume, name='admin_delete_resume'),
 ]+static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
